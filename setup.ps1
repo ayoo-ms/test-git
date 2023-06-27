@@ -5,7 +5,7 @@
  $conflictingChanges = git merge-base --is-ancestor origin/$targetBranch $currentBranch
  $isAheadOrSame = $?
  if (-not $isAheadOrSame){
-     Write-Host "WARNING!! Your local branch is behind origin/$($targetBranch), please rebase or pull the latest artifacts from the remote $($targetBranch) branch`n" ForegroundColor RED
+     Write-Host "WARNING!! Your local branch is behind origin/$($targetBranch), please rebase or pull the latest artifacts from the remote $($targetBranch) branch`n" -ForegroundColor RED
     }
 elseif ($conflictingChanges) {
     Throw "Conflicting changes detected between current branch and remote $($targetBranch), please rebase or pull the latest artifacts from the remote $($targetBranch) branch`n"
@@ -18,9 +18,9 @@ elseif ($conflictingChanges) {
 
     # check for changes in Tooling and Customer folders
  $directoriesToCheck = @(
-     "Internal/Tools/*",   # changes in permissions, ms graph preautz, tooling etc
-      "Customers/Powershell/*",   # customer facing changes
-      "Customers/Configs/*"
+     "internal/*",   # changes in permissions, ms graph preautz, tooling etc
+      "customers/",   # customer facing changes
+      "tools/*"
     )
 
  $modifiedFilesInTargetBranch = git diff --name-only origin/$targetBranch
