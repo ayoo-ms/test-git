@@ -1,1 +1,7 @@
+<<<<<<< HEAD
 paulo
+=======
+test
+test
+test
+>>>>>>> b08cf5837d4ecfc9a91eb03daa7d781a3bf998a1
