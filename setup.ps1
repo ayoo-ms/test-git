@@ -8,7 +8,7 @@
      Write-Host "WARNING!! Your local branch is behind origin/$($targetBranch), please rebase or pull the latest artifacts from the remote $($targetBranch) branch`n" -ForegroundColor RED
     }
 if ($conflictingChanges) {
-    Throw "Conflicting changes detected between current branch and remote $($targetBranch), please rebase or pull the latest artifacts from the remote $($targetBranch) branch`n"
+    Write-Host "Error: Conflicting changes detected between current branch and remote $($targetBranch), please rebase or pull the latest artifacts from the remote $($targetBranch) branch`n"
     exit 1
     }
 
