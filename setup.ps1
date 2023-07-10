@@ -1,23 +1,22 @@
 $targetBranch = "master"
-
 git fetch origin $targetBranch | out-null
+
 $currentBranch = git rev-parse --abbrev-ref HEAD
 git merge-base --is-ancestor origin/$targetBranch $currentBranch
 $isAheadOrSame = $?
 if (-not $isAheadOrSame){
 
     # check for conflicts
-    $diffOutput = git diff origin/$targetBranch..$currentBranch --name-only --diff-filter=U
+    $conflicts = git diff --check origin/$targetBranch $currentBranch
 
     # If the output contains any conflicted files, print an error message
-    if ($diffOutput) {
-        Write-Host "Error: Conflicts found between remote $($targetBranch) and $($currentBranch) branch."  -ForegroundColor RED
-        Write-Host $diffOutput  -ForegroundColor RED
+    if ($conflicts) {
+        Write-Host "Error: Please resolve conflicts between remote $($targetBranch) and local branch."  -ForegroundColor RED
         exit 1
     } else {
         Write-Host "No conflicts found.`n"
     }
-    
+
     # check for changes in Tooling and Customer folders
     $directoriesToCheck = @(
        "internal/*",   # changes in permissions, ms graph preautz, tooling etc
