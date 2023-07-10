@@ -11,7 +11,6 @@ if ($conflictingChanges) {
     Write-Host "Error: Conflicting changes detected between current branch and remote $($targetBranch), please rebase or pull the latest artifacts from the remote $($targetBranch) branch`n"
     exit 1
     }
-
     
     # check for changes in Tooling and Customer folders
  $directoriesToCheck = @(
