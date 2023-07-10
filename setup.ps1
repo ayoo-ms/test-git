@@ -30,7 +30,3 @@ foreach ($directory in $directoriesToCheck) {
        }
    }
 
-if (-not $conflictingChanges && $isAheadOrSame) {   
-        Write-Host "Local branch is up to date with $($targetBranch) branch."
-        write-host "============================================`n"
-    }
