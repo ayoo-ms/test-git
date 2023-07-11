@@ -7,7 +7,7 @@ $isAheadOrSame = $?
 if (-not $isAheadOrSame){
 
     # check for conflicts
-    $conflicts = git diff --check origin/$targetBranch..master
+    $conflicts = git diff --check origin/$targetBranch..$currentBranch
 
     # If the output contains any conflicted files, print an error message
     if ($conflicts) {
