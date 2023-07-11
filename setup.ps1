@@ -32,13 +32,11 @@ if ($masterChanges) {
 $localBranch = "your-local-branch-name"
 
 # Check for conflicts between local branch and 'master' branch
-$conflictOutput = git diff --check origin/master..master
+$statusOutput = git status
 
 # If conflicts are found, print an error message
-if ($conflictOutput) {
+if ($statusOutput -match "(<<<<<<<|=======|>>>>>>>)") {
     Write-Host "Error: Conflicts found between local branch and 'master' branch."
-    Write-Host "Conflicts:"
-    Write-Host $conflictOutput
 } else {
     Write-Host "No conflicts found between local branch and 'master' branch."
 }
