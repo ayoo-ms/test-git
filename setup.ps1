@@ -1,42 +1,44 @@
-$targetBranch = "master"
-git fetch origin $targetBranch | out-null
+# Set the specific folders to check for changes
+$foldersToCheck = @("customers", "internal", "tools")
 
-$currentBranch = git rev-parse --abbrev-ref HEAD
-git merge-base --is-ancestor origin/$targetBranch $currentBranch
-$isAheadOrSame = $?
-if (-not $isAheadOrSame){
+# Check if 'master' branch has changes
+$masterChanges = git diff --name-only origin/master
 
-    # check for conflicts
-    $conflicts = git diff --check origin/$targetBranch $currentBranch
+if ($masterChanges) {
+    Write-Host "Changes found in 'master' branch."
+    Write-Host "Changed files:"
+    Write-Host $masterChanges
 
-    # If the output contains any conflicted files, print an error message
-    if ($conflicts) {
-        Write-Host "Error: Please resolve conflicts between remote $($targetBranch) and local branch."  -ForegroundColor RED
-        exit 1
-    } else {
-        Write-Host "No conflicts found.`n"
+    # Check if changes are in specific folders
+    $changedFolders = $masterChanges | ForEach-Object {
+        Split-Path $_ -Parent | Get-Unique
     }
 
-    # check for changes in Tooling and Customer folders
-    $directoriesToCheck = @(
-       "internal/*",   # changes in permissions, ms graph preautz, tooling etc
-        "customers/*",   # customer facing changes
-        "tools/*"
-      )
+    $matchingFolders = Compare-Object $foldersToCheck $changedFolders
 
-    $modifiedFilesInTargetBranch = git diff --name-only origin/$targetBranch
-
-    foreach ($directory in $directoriesToCheck) {
-        $modifiedFile = $modifiedFilesInTargetBranch  | Where-Object { $_ -like $directory }
-        if ($modifiedFile) {
-            Write-Host "Error: Changes in internal tools and/or customer binaries detected, please rebase or pull the latest artifacts from the remote $($targetBranch) branch`n"  -ForegroundColor RED
-            exit 1
+    if ($matchingFolders) {
+        Write-Host "Changes found in the following folders:"
+        $matchingFolders | Where-Object { $_.SideIndicator -eq '==' } | ForEach-Object {
+            Write-Host $_.InputObject
         }
+    } else {
+        Write-Host "No changes found in the specified folders."
     }
-
-    Write-Host "WARNING!! Your local branch is behind origin/$($targetBranch), please rebase or pull the latest artifacts from the remote $($targetBranch) branch`n" -ForegroundColor RED
+} else {
+    Write-Host "No changes found in 'master' branch."
 }
-else {   
-    Write-Host "Local branch is up to date with $($targetBranch) branch."
-    write-host "============================================`n"
+
+# Set the local branch name
+$localBranch = "your-local-branch-name"
+
+# Check for conflicts between local branch and 'master' branch
+$conflictOutput = git diff --check origin/master..master
+
+# If conflicts are found, print an error message
+if ($conflictOutput) {
+    Write-Host "Error: Conflicts found between local branch and 'master' branch."
+    Write-Host "Conflicts:"
+    Write-Host $conflictOutput
+} else {
+    Write-Host "No conflicts found between local branch and 'master' branch."
 }
