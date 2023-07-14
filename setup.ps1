@@ -4,8 +4,13 @@ $specificFolders = @("customers", "internal", "tools")
 # Fetch the latest changes from the remote repository
 git fetch
 
+<<<<<<< HEAD
 # Get the commit hash of the remote master branch
 $remoteMasterCommit = git rev-parse origin/master
+=======
+    # check for conflicts
+    $conflicts = git diff --check origin/$targetBranch..$currentBranch
+>>>>>>> 94b3e1ee9781b1d2cb40c6150a6ae447b9d52cdc
 
 # Get the commit hash of the current branch
 $currentBranchCommit = git rev-parse HEAD
@@ -37,3 +42,10 @@ if ($remoteMasterCommit -ne $currentBranchCommit) {
 } else {
     Write-Host "The remote 'master' branch does not have any new changes."
 }
+<<<<<<< HEAD
+=======
+else {   
+    Write-Host "Local branch is up to date with $($targetBranch) branch."
+    write-host "============================================`n"
+}
+>>>>>>> 94b3e1ee9781b1d2cb40c6150a6ae447b9d52cdc
