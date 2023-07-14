@@ -3,7 +3,6 @@ $remoteBranch = "origin/master"
 $localBranch = "master"
 
 git fetch
-
 # Set the specific folders to check changes in
 $specificFolders = @("customers", "internal", "tools")
 
