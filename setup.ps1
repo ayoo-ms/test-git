@@ -1,51 +1,42 @@
-# Set the specific folders to check for changes
+# Set the remote and local branch names
+$remoteBranch = "origin/master"
+$localBranch = "master"
+
+# Set the specific folders to check changes in
 $specificFolders = @("customers", "internal", "tools")
 
-# Fetch the latest changes from the remote repository
-git fetch
+# Check if remote `master` has any new changes
+$remoteChanges = git rev-list --left-right --count $localBranch...$remoteBranch | ForEach-Object { $_.Split("`t")[1] }
 
-<<<<<<< HEAD
-# Get the commit hash of the remote master branch
-$remoteMasterCommit = git rev-parse origin/master
-=======
-    # check for conflicts
-    $conflicts = git diff --check origin/$targetBranch..$currentBranch
->>>>>>> 94b3e1ee9781b1d2cb40c6150a6ae447b9d52cdc
+if ($remoteChanges -ne "0") {
+    # Remote `master` has new changes
+    Write-Host "Remote master has $remoteChanges new changes."
 
-# Get the commit hash of the current branch
-$currentBranchCommit = git rev-parse HEAD
+    # Check if the changes conflict with the local branch
+    $conflictCheck = git cherry -v $localBranch $remoteBranch | Select-String -Pattern "^\+" -NotMatch
 
-# Check if the remote master branch has new changes
-if ($remoteMasterCommit -ne $currentBranchCommit) {
-    Write-Host "The remote 'master' branch has new changes."
+    if ($conflictCheck) {
+        # Changes do not conflict with the local branch
 
-    # Check for conflicts between local branch and 'master'
-    $conflictOutput = git diff --name-only --diff-filter=U origin/master
+        # Check if the changes are in specific folders
+        $changedFiles = git diff --name-only $localBranch..$remoteBranch -- $specificFolders
 
-    if ($conflictOutput) {
-        Write-Host "Conflicts found between the current branch and 'master'."
-        Write-Host "Conflicted files:"
-        Write-Host $conflictOutput
-    } else {
-        Write-Host "No conflicts found between the current branch and 'master'."
-
-        # Check if the changes are in the specific folders
-        $changesInFolders = git diff --name-only --diff-filter=d origin/master -- $specificFolders
-
-        if ($changesInFolders) {
-            Write-Host "Changes are present in the specific folders:"
-            Write-Host $changesInFolders
-        } else {
-            Write-Host "No changes found in the specific folders."
+        if ($changedFiles) {
+            # Changes are in specific folders
+            Write-Host "Remote changes in specific folders:"
+            $changedFiles
+        }
+        else {
+            # No changes in specific folders
+            Write-Host "Remote changes are not in specific folders."
         }
     }
-} else {
-    Write-Host "The remote 'master' branch does not have any new changes."
+    else {
+        # Changes conflict with the local branch
+        Write-Host "Remote changes conflict with the local branch."
+    }
 }
-<<<<<<< HEAD
-=======
-else {   
-    Write-Host "Local branch is up to date with $($targetBranch) branch."
-    write-host "============================================`n"
+else {
+    # Local branch is up to date with remote `master`
+    Write-Host "Local branch is up to date with remote master."
 }
->>>>>>> 94b3e1ee9781b1d2cb40c6150a6ae447b9d52cdc
